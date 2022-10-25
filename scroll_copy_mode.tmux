@@ -21,7 +21,7 @@ get_repeated_scroll_cmd() {
   elif echo - | awk "{ if ($scroll_speed_num_lines_per_scroll > 0) { exit 0 } else { exit 1 } }" ; then  # Positive decimal between 0 and 1 (treat as percent).
     # Skip enough scrolls so that we scroll only on the specified percent of scrolls.
     local num_scrolls_to_scroll=`echo - | awk "{print int( 1/$scroll_speed_num_lines_per_scroll ) }"`
-    tmux set-environment __scroll_copy_mode__slow_scroll_count 0;
+    $TMUX_BIN set-environment __scroll_copy_mode__slow_scroll_count 0;
     cmd="if -t = \\\"$CURRENT_DIR/only_scroll_sometimes.sh $num_scrolls_to_scroll\\\" \\\"send-keys $1\\\" \\\"\\\"";
   fi
   echo "$cmd"
@@ -59,7 +59,7 @@ better_mouse_mode_main() {
   #   pattern used here for consistency is " \" ' \\\" \\\"  ' \" " -- that is,
   #   " for top-level quotes, \" for the next level in, ' for the third level,
   #   and \\\" for the fourth (note that the fourth comes from inside get_repeated_scroll_cmd).
-  tmux bind-key -n WheelUpPane \
+  $TMUX_BIN bind-key -n WheelUpPane \
     if -Ft= "#{mouse_any_flag}" \
       "send-keys -M" \
       " \
@@ -77,7 +77,7 @@ better_mouse_mode_main() {
   #   consistency is " \" ' \\\" \\\"  ' \" " -- that is, " for top-level quotes,
   #   \" for the next level in, ' for the third level, and \\\" for the fourth
   #   (note that the fourth comes from inside get_repeated_scroll_cmd).
-  tmux bind-key -n WheelDownPane \
+  $TMUX_BIN bind-key -n WheelDownPane \
     if -Ft= "#{mouse_any_flag}" \
       "send-keys -M" \
       " \
@@ -90,10 +90,10 @@ better_mouse_mode_main() {
   local tmux_version=$(get_tmux_version)
   if echo - | awk "{ if ($tmux_version >= 2.4) { exit 0 } else { exit 1 } }" ; then  # Use copy-mode tables to set scroll speed.
 		local scroll_speed_num_lines_per_scroll=$(get_tmux_option "$scroll_speed_num_lines_per_scroll_option" "3")
-    tmux bind-key -Tcopy-mode WheelUpPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-up
-		tmux bind-key -Tcopy-mode WheelDownPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-down
-    tmux bind-key -Tcopy-mode-vi WheelUpPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-up
-		tmux bind-key -Tcopy-mode-vi WheelDownPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-down
+    $TMUX_BIN bind-key -Tcopy-mode WheelUpPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-up
+		$TMUX_BIN bind-key -Tcopy-mode WheelDownPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-down
+    $TMUX_BIN bind-key -Tcopy-mode-vi WheelUpPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-up
+		$TMUX_BIN bind-key -Tcopy-mode-vi WheelDownPane send -N"$scroll_speed_num_lines_per_scroll" -X scroll-down
   fi
 }
 
