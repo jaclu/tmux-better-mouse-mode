@@ -6,14 +6,14 @@
 #  # echo, so we can test what its setting.
 #  if [[ "$1" == "show-option" ]] ; then
 #    tmux-2.2/tmux "$@"
-#  else 
+#  else
 #    echo "$@"
 #  fi
 #}
-tmux() {
-  tmux-2.2/tmux "$@"
-}
-export -f tmux
+# tmux() {
+#   tmux-2.2/tmux "$@"
+# }
+# export -f tmux
 
 # ------ Unit Tests -----------------------
 
@@ -21,20 +21,20 @@ export -f tmux
 testBasicBindKeysAreCalled() {
   bash scroll_copy_mode.tmux
 
-  assertNotNull "`tmux list-keys -T root | grep 'WheelUpPane'`"
-  assertNotNull "`tmux list-keys -T root | grep 'WheelDownPane'`"
+  assertNotNull "`$TMUX_BIN list-keys -T root | grep 'WheelUpPane'`"
+  assertNotNull "`$TMUX_BIN list-keys -T root | grep 'WheelDownPane'`"
 }
 
 checkScrollSpeedSetCorrectly() {
   testSpeed="$1"
   expectedValue="$2"
-  tmux set -g @scroll-speed-num-lines-per-scroll $testSpeed
+  $TMUX_BIN set -g @scroll-speed-num-lines-per-scroll $testSpeed
 
   bash scroll_copy_mode.tmux
 
   # Make sure send-keys shows up correct number of times in up and down scroll bindings.
-  assertEquals 'number of `send-keys` per scroll up not equal to user setting' $expectedValue `tmux list-keys -T root | grep 'WheelUpPane' | grep -o "'send-keys[^']*'" | head -n 1 | grep -o 'send-keys' | wc -l`
-  assertEquals 'number of `send-keys` per scroll down not equal to user setting' $expectedValue `tmux list-keys -T root | grep 'WheelDownPane' | grep -o "'send-keys[^']*'" | head -n 1 | grep -o 'send-keys' | wc -l`
+  assertEquals 'number of `send-keys` per scroll up not equal to user setting' $expectedValue `$TMUX_BIN list-keys -T root | grep 'WheelUpPane' | grep -o "'send-keys[^']*'" | head -n 1 | grep -o 'send-keys' | wc -l`
+  assertEquals 'number of `send-keys` per scroll down not equal to user setting' $expectedValue `$TMUX_BIN list-keys -T root | grep 'WheelDownPane' | grep -o "'send-keys[^']*'" | head -n 1 | grep -o 'send-keys' | wc -l`
 }
 
 testValidIntegerScrollSpeeds() {
@@ -54,14 +54,14 @@ testInvalidIntegerScrollSpeeds() {
 checkFractionalScrollSpeedSetCorrectly() {
   testSpeed="$1"
   expectedNumScrollsBeforeScroll="$2"
-  tmux set -g @scroll-speed-num-lines-per-scroll $testSpeed
+  $TMUX_BIN set -g @scroll-speed-num-lines-per-scroll $testSpeed
 
   bash scroll_copy_mode.tmux
 
-  assertNotNull "`tmux list-keys -T root | grep 'WheelUpPane' | grep \"only_scroll_sometimes.sh $expectedNumScrollsBeforeScroll\"`"
-  assertNotNull "`tmux list-keys -T root | grep 'WheelDownPane' | grep \"only_scroll_sometimes.sh $expectedNumScrollsBeforeScroll\"`"
+  assertNotNull "`$TMUX_BIN list-keys -T root | grep 'WheelUpPane' | grep \"only_scroll_sometimes.sh $expectedNumScrollsBeforeScroll\"`"
+  assertNotNull "`$TMUX_BIN list-keys -T root | grep 'WheelDownPane' | grep \"only_scroll_sometimes.sh $expectedNumScrollsBeforeScroll\"`"
 
-  assertNotNull "`tmux show-environment __scroll_copy_mode__slow_scroll_count`"
+  assertNotNull "`$TMUX_BIN show-environment __scroll_copy_mode__slow_scroll_count`"
 }
 
 testValidFractionalScrollSpeeds() {
